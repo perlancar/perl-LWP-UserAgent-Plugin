@@ -61,7 +61,7 @@ sub _run_hooks {
 }
 
 sub request {
-    my $r = {ht=>$self, argv=>[@_]};
+    my $r = {ua=>$_[0], argv=>[@_]};
     my $self = shift;
 
     while (1) {
