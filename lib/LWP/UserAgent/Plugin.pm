@@ -1,6 +1,8 @@
 package LWP::UserAgent::Plugin;
 
+# AUTHORITY
 # DATE
+# DIST
 # VERSION
 
 use 5.010001;
@@ -61,13 +63,25 @@ sub _run_hooks {
 }
 
 sub request {
-    my $r = {ua=>$_[0], argv=>[@_]};
+    my $r = {ua=>$_[0], argv=>[@_], method=>'request'};
     my $self = shift;
 
     while (1) {
         $r->{response} = $self->SUPER::request(@_)
             unless $self->_run_hooks('before_request', {all=>1}, $r) == 99;
         last unless $self->_run_hooks('after_request', {all=>1}, $r) == 98;
+    }
+    $r->{response};
+}
+
+sub mirror {
+    my $r = {ua=>$_[0], argv=>[@_], method=>'mirror'};
+    my $self = shift;
+
+    while (1) {
+        $r->{response} = $self->SUPER::request(@_)
+            unless $self->_run_hooks('before_mirror', {all=>1}, $r) == 99;
+        last unless $self->_run_hooks('after_mirror', {all=>1}, $r) == 98;
     }
     $r->{response};
 }
@@ -126,6 +140,11 @@ Hooks will be called with argument C<$r>, a hash that contains various
 information. Keys that are common for all hooks:
 
 =over
+
+=item * method
+
+The related LWP::UserAgent method. For example, in C<before_request> and
+C<after_request> hook, the value is C<request>.
 
 =item * config
 
@@ -214,6 +233,16 @@ interpret 99 (skip calling C<request()>).
 
 Will be called before C<request()>. All plugins will be called. Stage will
 interpret 98 (repeat calling C<request()>).
+
+=item * before_mirror
+
+Will be called before C<mirror()>. All plugins will be called. Stage will
+interpret 99 (skip calling C<mirror()>).
+
+=item * after_mirror
+
+Will be called before C<request()>. All plugins will be called. Stage will
+interpret 98 (repeat calling C<mirror()>).
 
 =back
 
