@@ -48,9 +48,12 @@ sub set_plugins {
 sub _run_hooks {
     my ($self, $hook, $opts, $r) = @_;
 
+    log_trace "[LWP::UserAgent::Plugin] -> running hook %s", $hook if $ENV{LWP_USERAGENT_PLUGIN_TRACE};
+
     my $status;
     for my $p (@plugins) {
         next unless $p->[0]->can($hook);
+        log_trace "[LWP::UserAgent::Plugin]   -> handler from plugin %s", $p->[0] if $ENV{LWP_USERAGENT_PLUGIN_TRACE};
         local $r->{config} = $p->[1];
         local $r->{hook} = $hook;
         $status = $p->[0]->$hook($r);
@@ -59,7 +62,9 @@ sub _run_hooks {
         }
         last if $status == 98 || $status == 99;
     }
-    $status // -1;
+    $status //= -1;
+    log_trace "[LWP::UserAgent::Plugin] <- return hook %s, status %d", $hook, $status if $ENV{LWP_USERAGENT_PLUGIN_TRACE};
+    $status;
 }
 
 sub request {
@@ -264,6 +269,10 @@ configure the plugin.
 
 
 =head1 ENVIRONMENT
+
+=head2 LWP_USERAGENT_PLUGIN_TRACE
+
+Bool. If set to true, will produce more trace log statements.
 
 =head2 LWP_USERAGENT_PLUGINS
 
