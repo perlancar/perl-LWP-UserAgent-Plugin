@@ -84,7 +84,7 @@ sub mirror {
     my $self = shift;
 
     while (1) {
-        $r->{response} = $self->SUPER::request(@_)
+        $r->{response} = $self->SUPER::mirror(@_)
             unless $self->_run_hooks('before_mirror', {all=>1}, $r) == 99;
         last unless $self->_run_hooks('after_mirror', {all=>1}, $r) == 98;
     }
