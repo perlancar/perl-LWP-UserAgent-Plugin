@@ -163,10 +163,6 @@ Object. The LWP::UserAgent object.
 
 The current hook name.
 
-=item * hook
-
-The hook name.
-
 =item * argv
 
 Array. Arguments passed to hook-related method. For example, for
